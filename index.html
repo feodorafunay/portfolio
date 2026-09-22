@@ -431,6 +431,9 @@
                 rgba(255,255,255,0.06);
 
             cursor: pointer;
+
+            position: relative;
+            z-index: 1001;
         }
 
 
@@ -3386,11 +3389,11 @@
                     </div>
 
                     <h3>
-                        Cinta Laura Kiehl's TikTok account
+                        Cinta Laura Kiehl's TikTok Account
                     </h3>
 
                     <div class="timeline-role">
-                        Freelance
+                        Freelance Data Analyst
                     </div>
 
                     <p>
@@ -3432,6 +3435,31 @@
                 <div class="timeline-item reveal delay-3">
 
                     <div class="timeline-date">
+                        2022
+                    </div>
+
+                    <h3>
+                        Selisia
+                    </h3>
+
+                    <div class="timeline-role">
+                        Freelance Web Developer
+                    </div>
+
+                    <p>
+
+                        Developed a user-friendly ReactJS and 
+                        ServiceStack-based web platform tailored 
+                        specifically for senior adults, elderly 
+                        individuals, and retirees.
+
+                    </p>
+
+                </div>
+
+                <div class="timeline-item reveal delay-4">
+
+                    <div class="timeline-date">
                         2021 — Present
                     </div>
 
@@ -3453,31 +3481,7 @@
                     </p>
 
                 </div>
-
-                <div class="timeline-item reveal delay-4">
-
-                    <div class="timeline-date">
-                        2020
-                    </div>
-
-                    <h3>
-                        Selisia
-                    </h3>
-
-                    <div class="timeline-role">
-                        Freelance
-                    </div>
-
-                    <p>
-
-                        Developed a user-friendly ReactJS and 
-                        ServiceStack-based web platform tailored 
-                        specifically for senior adults, elderly 
-                        individuals, and retirees.
-
-                    </p>
-
-                </div>
+               
 
                 <div class="timeline-item reveal delay-5">
 
@@ -3913,6 +3917,40 @@ document.addEventListener(
 
                     : '<i class="fa-solid fa-bars"></i>';
 
+                document.body.classList.toggle(
+                    "menu-open",
+                    isOpen
+                );
+            }
+        );
+
+        /* Tutup menu dengan tombol Escape */
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (
+                    event.key === "Escape" &&
+                    navLinks.classList.contains("open")
+                ) {
+
+                    navLinks.classList.remove("open");
+
+                    menuToggle.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    menuToggle.innerHTML =
+                        '<i class="fa-solid fa-bars"></i>';
+
+                    document.body.classList.remove(
+                        "menu-open"
+                    );
+
+                }
+
             }
         );
 
@@ -3939,6 +3977,9 @@ document.addEventListener(
                         menuToggle.innerHTML =
                             '<i class="fa-solid fa-bars"></i>';
 
+                        document.body.classList.remove(
+                            "menu-open"
+                        );
                     }
                 );
 

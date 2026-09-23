@@ -384,7 +384,7 @@
         .nav-links a:hover,
         .nav-links a.active {
 
-            color: var(--white);
+            /* color: var(--white); */
 
             background:
                 rgba(255,255,255,0.06);
@@ -402,6 +402,8 @@
 
             background:
                 var(--gold) !important;
+
+            margin-top: 6px;
         }
 
 
@@ -436,6 +438,34 @@
             z-index: 1001;
         }
 
+        .nav-overlay {
+
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition:
+                opacity 0.3s ease,
+                visibility 0.3s ease;
+
+            z-index: 998;
+            }
+
+
+        .nav-overlay.open {
+
+        opacity: 1;
+        visibility: visible;
+        }
+
+        /* (Catatan: z-index: 998 sengaja di bawah .nav-links yang 999 
+        dan .menu-toggle yang 1001, supaya urutan tumpukannya: 
+        overlay paling belakang → panel menu → tombol X paling depan.) */
 
         /* =========================================
            HERO
@@ -2198,44 +2228,41 @@
             .nav-links {
 
                 position: fixed;
-
-                top: 0;
-                left: 0;
-                right: 0;
-                width: 100%;
-                height: 100vh;
-
+                top: 72px;              /* jarak dari atas, kira-kira tinggi navbar + margin */
+                left: 16px;
+                right: 16px;
+                width: auto;
+                height: auto;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
                 display: flex;
                 flex-direction: column;
-
-                padding: 100px 30px 30px;
-
+                gap: 2px;
+                padding: 14px 14px 22px;
                 border: 1px solid var(--border);
-                border-radius: 20px 0 0 20px;
-
-                background: rgba(10, 11, 15, 0.95);
+                border-radius: 20px;    /* rounded semua sisi, senada sama pill navbar */
+                background: rgba(10, 11, 15, 0.97);
                 backdrop-filter: blur(20px);
-
                 box-shadow: var(--shadow);
-
-                transform: translateY(-100%);
+                transform: translateY(-12px) scale(0.98);
+                opacity: 0;
                 visibility: hidden;
-                transition: transform 0.35s ease, visibility 0.35s ease;
-
+                transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
                 z-index: 999;
             }
 
 
             .nav-links.open {
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+                opacity: 1;
                 visibility: visible;
             }
 
 
             .nav-links a {
 
-                padding:
-                    13px 15px;
+                padding: 12px 16px;
+                border-radius: 12px;
             }
 
 
@@ -2491,7 +2518,7 @@
 
 </div>
 
-
+<div class="nav-overlay" id="navOverlay"></div>
 
 <!-- =========================================
      HERO
@@ -3894,35 +3921,83 @@ document.addEventListener(
             );
 
 
+            const navOverlay =
+            document.getElementById(
+                "navOverlay"
+            );
+
+
+        function openMenu() {
+
+            navLinks.classList.add("open");
+            navOverlay.classList.add("open");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            menuToggle.innerHTML =
+                '<i class="fa-solid fa-xmark"></i>';
+
+            document.body.classList.add(
+                "menu-open"
+            );
+
+        }
+
+
+        function closeMenu() {
+
+            navLinks.classList.remove("open");
+            navOverlay.classList.remove("open");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            menuToggle.innerHTML =
+                '<i class="fa-solid fa-bars"></i>';
+
+            document.body.classList.remove(
+                "menu-open"
+            );
+
+        }
+
+
         menuToggle.addEventListener(
             "click",
             () => {
 
                 const isOpen =
-                    navLinks.classList.toggle(
+                    navLinks.classList.contains(
                         "open"
                     );
 
 
-                menuToggle.setAttribute(
-                    "aria-expanded",
-                    isOpen
-                );
+                if (isOpen) {
 
+                    closeMenu();
 
-                menuToggle.innerHTML =
-                    isOpen
+                } else {
 
-                    ? '<i class="fa-solid fa-xmark"></i>'
+                    openMenu();
 
-                    : '<i class="fa-solid fa-bars"></i>';
+                }
 
-                document.body.classList.toggle(
-                    "menu-open",
-                    isOpen
-                );
             }
         );
+
+
+        /* Tutup menu dengan tap di area gelap */
+
+        navOverlay.addEventListener(
+            "click",
+            closeMenu
+        );
+
 
         /* Tutup menu dengan tombol Escape */
 
@@ -3935,19 +4010,7 @@ document.addEventListener(
                     navLinks.classList.contains("open")
                 ) {
 
-                    navLinks.classList.remove("open");
-
-                    menuToggle.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
-                    menuToggle.innerHTML =
-                        '<i class="fa-solid fa-bars"></i>';
-
-                    document.body.classList.remove(
-                        "menu-open"
-                    );
+                    closeMenu();
 
                 }
 
@@ -3955,7 +4018,7 @@ document.addEventListener(
         );
 
 
-        /* Close mobile menu */
+        /* Close mobile menu saat link ditekan */
 
         navLinks
             .querySelectorAll("a")
@@ -3963,29 +4026,10 @@ document.addEventListener(
 
                 link.addEventListener(
                     "click",
-                    () => {
-
-                        navLinks.classList.remove(
-                            "open"
-                        );
-
-                        menuToggle.setAttribute(
-                            "aria-expanded",
-                            "false"
-                        );
-
-                        menuToggle.innerHTML =
-                            '<i class="fa-solid fa-bars"></i>';
-
-                        document.body.classList.remove(
-                            "menu-open"
-                        );
-                    }
+                    closeMenu
                 );
 
-            });
-
-
+        });
 
         /* =====================================
            SCROLL REVEAL
